@@ -2,31 +2,25 @@
 #include "Pinned.h"
 
 namespace PinnedOut{
-    Pinned::Pinned(PinName ioPin){
-        DigitalOut newOut(ioPin);
-        Output = &newOut;
+    Pinned::Pinned(PinName OutPin, PinName InPin){
+        Output = DigitalOut(OutPin);
+        Input = DigitalIn(InPin);
     }
 
     void Pinned::enable(void){
         forced = true;
         statusOutput = true;
-        evaluate();
+        this->evaluate();
     }
 
     void Pinned::disable(void){
         forced = true;
         statusOutput = false;
-        evaluate();
+        this->evaluate();
     }
 
     void Pinned::forceSoftware(void){
         forced = false;
-    }
-
-    void Pinned::setInput(PinName ioPin){
-        setIn = true;
-        DigitalIn newIn(ioPin);
-        Input = &newIn;
     }
 
     bool Pinned::statusForced(void){
@@ -38,13 +32,13 @@ namespace PinnedOut{
     }
 
     void Pinned::evaluate(void){
-        if(forced){
-            if(statusOutput) Output->write(1);
-            else Output->write(0);
+        Output = 1;
+        /* if(forced){
+            Output = statusOutput;
         }else{
-            if((Input->read()==1) && (setIn = true)) Output->write(1);
-            else Output->write(0);
-        }
+            statusOutput=Input;
+            Output = statusOutput;
+        } */
     }
 
 }
