@@ -2,52 +2,48 @@
 #include "Pinned.h"
 
 namespace PinnedOut{
-    Pinned::Pinned(PinName ioPins[],bool outputPins[], unsigned int sizePins){
-        output = outputPins;
-        size = sizePins;
-        for(unsigned int i = 0; i< size; i++ ){
-            io[i] = DigitalInOut(ioPins[i]);
-            io[i].input();
-            if(output[i])io[i].output();
-        }
+    Pinned::Pinned(PinName ioPin){
+        DigitalOut newOut(ioPin);
+        Output = &newOut;
     }
-    Pinned::Pinned(PinName ioPin, bool outputPin){
-        io[0] = DigitalInOut(ioPin);
-        output[0] = outputPin;
-        size = 1;
-        io[0].input();
-        if(outputPin)io[0].output();
-    }
-    Pinned::Pinned(){}
+
     void Pinned::enable(void){
-        if(forced)outEnable(false, true);
+        forced = true;
+        statusOutput = true;
+        evaluate();
     }
+
     void Pinned::disable(void){
-        if(forced)outEnable(false, false);
+        forced = true;
+        statusOutput = false;
+        evaluate();
     }
+
     void Pinned::forceSoftware(void){
-        forced = !forced;
+        forced = false;
     }
+
+    void Pinned::setInput(PinName ioPin){
+        setIn = true;
+        DigitalIn newIn(ioPin);
+        Input = &newIn;
+    }
+
     bool Pinned::statusForced(void){
         return forced;
     }
+
     bool Pinned::status(void){
         return statusOutput;
     }
 
-    void openDrain(bool openDrain[]){
-        for(unsigned int i = 0; i<size; i++ ){
-            this->io[i].mode(PullDefault);
-            if(output[i]&&opendDrain[i])this->io[i].mode(OpenDrain);
-        }
-    }
-
-    void Pinned::setOut(bool hardware, bool enabled){
-        if(forced && !hardware || !forced && hardeware){
-            for(unsigned int i = 0; i<size; i++ ){
-                if(output[i])this->io[i] = enabled;
-            }
-            statusOutput = enabled;
+    void Pinned::evaluate(void){
+        if(forced){
+            if(statusOutput) Output->write(1);
+            else Output->write(0);
+        }else{
+            if((Input->read()==1) && (setIn = true)) Output->write(1);
+            else Output->write(0);
         }
     }
 

@@ -4,21 +4,20 @@
 namespace PinnedOut{
     class Pinned{
         public:
-            Pinned(PinName ioPins[],bool outputPins[], unsigned int sizePins);
-            Pinned(PinName ioPin, bool outputPin);
-            Pinned(void);
+            Pinned(PinName ioPin);
             void enable(void);
             void disable(void);
             void forceSoftware(void);
-            void openDrain(bool OpenDrain[]);
+            void setInput(PinName ioPin);
             bool statusForced(void);
             bool status(void);
+            void evaluate(void);
         private:
-            void setOut(bool hardeware, bool enabled);
-            bool output[];
-            DigitalInOut io[];
+            DigitalOut * Output;
+            DigitalIn * Input;
             bool forced = false;
             bool statusOutput = false;
-            unsigned int size = 0;
+            unsigned int sizeOut = 0;
+            bool setIn = false;
     };
 }
