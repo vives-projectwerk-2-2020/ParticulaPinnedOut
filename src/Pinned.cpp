@@ -1,44 +1,49 @@
 #include "mbed.h"
 #include "Pinned.h"
 
-namespace PinnedOut{
-    Pinned::Pinned(PinName OutPin, PinName InPin){
-        Output = DigitalOut(OutPin);
-        Input = DigitalIn(InPin);
+namespace Particula{
+    Pinned::Pinned(PinName out_pin, PinName in_pin){
+        output = DigitalOut(out_pin);
+        input = DigitalIn(in_pin);
     }
 
     void Pinned::enable(void){
         forced = true;
-        statusOutput = true;
+        output.write(0);
+        status_output = true;
         this->evaluate();
     }
 
     void Pinned::disable(void){
         forced = true;
-        statusOutput = false;
+        output.write(1);
+        status_output = false;
         this->evaluate();
     }
 
-    void Pinned::forceSoftware(void){
+    void Pinned::force_software(void){
         forced = false;
     }
 
-    bool Pinned::statusForced(void){
+    bool Pinned::status_forced(void){
         return forced;
     }
 
     bool Pinned::status(void){
-        return statusOutput;
+        return status_output;
     }
 
     void Pinned::evaluate(void){
-        Output = 1;
-        /* if(forced){
-            Output = statusOutput;
+        if(forced){
+            return;
         }else{
-            statusOutput=Input;
-            Output = statusOutput;
-        } */
+            status_output = (bool) input;
+            if(input){
+                output.write(1); 
+            }else{
+                output.write(0);
+            }
+        } 
     }
 
 }
